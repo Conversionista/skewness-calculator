@@ -1,1 +1,1 @@
-# can-i-test-that
+# Skewness Calculator
