@@ -2,6 +2,8 @@
 var len;
 var queryData = [];
 
+var nameScope = 'skewness_calc';
+
 $('body').loadie();
 $('.loadie').fadeIn();
 var progress = 0.2
@@ -126,7 +128,7 @@ function debug(b) {
 
 function getId(key) {
     'use strict';
-    var l = readLocal('feasibility_calc');
+    var l = readLocal(nameScope);
     if (key === 'accountId') {
         return l.accountId;
     } else if (key === 'propertyId') {
@@ -152,7 +154,7 @@ function showError(title, message) {
 
 function createReportQuery(metrics) {
     'use strict';
-    var l = readLocal('feasibility_calc');
+    var l = readLocal(nameScope);
     var q = {
         'viewId': l.profileId,
         'samplingLevel': 'LARGE',
@@ -273,7 +275,7 @@ function handleAccounts(response) {
     'use strict';
     addProgress(0.13);
     if (response.result.items && response.result.items.length) {
-        $('#accountId').html('').attr('disabled', false);
+        $('#accountId').html('<option selected="selected" disabled="true">--Please Select --</option>').attr('disabled', false);
         $.each(response.result.items, function(index, val) {
             $('#accountId').append($('<option/>', {
                 value: val.id,
@@ -283,8 +285,8 @@ function handleAccounts(response) {
         
         finishProgress();
 
-        // updateLocal('feasibility_calc', 'accountId', $('#accountId').val());
-        var l = readLocal('feasibility_calc');
+        // updateLocal(nameScope, 'accountId', $('#accountId').val());
+        var l = readLocal(nameScope);
         if (l === 'null' || l === null || l === undefined){
             $('#modalSettings').modal();
         } else {
@@ -307,7 +309,7 @@ function queryAccounts() {
 function handleProperties(response) {
     'use strict';
     if (response.result.items && response.result.items.length) {
-        $('#propertyId').html('').attr('disabled', false);
+        $('#propertyId').html('<option selected="selected" disabled="true">--Please Select --</option>').attr('disabled', false);
         $.each(response.result.items, function(index, val) {
             $('#propertyId').append($('<option/>', {
                 value: val.id,
@@ -315,7 +317,7 @@ function handleProperties(response) {
             }));
         });
 
-        var l = readLocal('feasibility_calc');
+        var l = readLocal(nameScope);
 
         if (l.propertyId) {
             $('#propertyId').val(l.propertyId);
@@ -342,7 +344,7 @@ function queryProperties(accountId) {
 function handleProfiles(response) {
     'use strict';
     if (response.result.items && response.result.items.length) {
-        $('#profileId').html('').attr('disabled', false);
+        $('#profileId').html('<option selected="selected" disabled="true">--Please Select --</option>').attr('disabled', false);
         $.each(response.result.items, function(index, val) {
             $('#profileId').append($('<option/>', {
                 value: val.id,
@@ -350,7 +352,7 @@ function handleProfiles(response) {
             }));
         });
 
-        var l = readLocal('feasibility_calc');
+        var l = readLocal(nameScope);
         if (l.profileId) {
             $('#profileId').val(l.profileId);
         } else {
@@ -605,7 +607,7 @@ $('#go').on('click', function(event) {
 
     $(this).html('<i class="fa fa-cog fa-spin"></i>').attr('disabled', true);
 
-    // var l = readLocal('feasibility_calc');
+    // var l = readLocal(nameScope);
     // queryReports(l.profileId, createReportQuery([{ 'expression': 'ga:users' }, { 'expression': 'ga:pageviews' }, { 'expression': 'ga:transactions' }]));
     getFormValues();
     event.preventDefault();
@@ -668,7 +670,14 @@ function apiClientLoaded() {
 
 function fcIdentify(name, email) {
     'use strict';
-    log(name + '\n' + email);
+    // log(name + '\n' + email);
+    if (typeof analytics !== 'undefined') { 
+        analytics.identify({
+            name: name,
+            email: email
+        });
+        // log(name + '\n' + email);
+    }
 }
 
 function hideLoginButton() {
@@ -677,21 +686,22 @@ function hideLoginButton() {
     // console.info('hide button');
 }
 
-$('#accountId').on('change', function() {
+$('#accountId').change( function() {
     'use strict';
     queryProperties(this.value);
-    updateLocal('feasibility_calc', 'accountId', this.value);
+    updateLocal(nameScope, 'accountId', this.value);
 });
 
-$('#propertyId').on('change', function() {
+$('#propertyId').change( function() {
     'use strict';
     queryProfiles($('#accountId').val(), this.value);
-    updateLocal('feasibility_calc', 'propertyId', this.value);
+    updateLocal(nameScope, 'propertyId', this.value);
 });
 
-$('#profileId').on('change', function() {
+$('#profileId').change( function() {
     'use strict';
-    updateLocal('feasibility_calc', 'profileId', this.value);
+    console.log('change')
+    updateLocal(nameScope, 'profileId', this.value);
 });
 
 
@@ -699,6 +709,7 @@ $(document).ready(function() {
     'use strict';
     $(':checkbox').checkboxpicker();
     $('[data-toggle="tooltip"]').tooltip();
+    $.bigfoot();
 });
 
 $('#getTransactions').on('click', function(event) {

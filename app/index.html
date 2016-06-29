@@ -12,6 +12,7 @@
     <!-- bower:css -->
     <link rel="stylesheet" href="/bower_components/sweetalert/dist/sweetalert.css" />
     <link rel="stylesheet" href="/bower_components/loadie.js/css/loadie.css" />
+    <link rel="stylesheet" href="/bower_components/bigfoot/dist/bigfoot-default.css" />
     <!-- endbower -->
     <!-- endbuild -->
     <!-- build:css styles/main.css -->
@@ -74,6 +75,7 @@
         <div class="row">
             <div class="col-md-6">
                 <button class="btn btn-success" id="getTransactions">Get transactions from GA</button>
+                <hr />
             </div>
             <div class="col-md-6">
                 <div id="dvImportSegments" class="fileupload well">
@@ -95,7 +97,7 @@
                             <th>Variance</th>
                             <th>Standard Deviation</th>
                             <th>Skewness</th>
-                            <th>Instances per variation</th>
+                            <th>Observations needed (per variation)</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -111,6 +113,15 @@
 
             </div>
         </div>
+        <div class="row"><div class="col-md-12">
+            <p>Microsoft's rule of thumb <sup id="fnref:1"><a href="#fn:1" rel="footnote">1</a></sup> for the minimum number of independent and identically distributed observations needed for the mean to have a normal distribution is \(355 × 𝑠^2\) for each variant, where 𝑠 is the skewness coefficient of the distribution of the variable \(X\) defined as:</p>
+            <p>$$𝑠 = {{E[X-E(X)]^3}\over{[Var(X)]^{3/2}}}$$</p>
+    <div class="footnotes"><ol>
+    <li class="footnote" id="fn:1">
+        <p><a href="http://www.exp-platform.com/Documents/2014%20experimentersRulesOfThumb.pdf" target="_blank">Kohavi, R., Deng, A., Longbotham, R., & Xu, Y. (n.d.). Seven Rules of Thumb for Web Site Experimenters. doi:10.1145/2623330.2623341</a><a href="#fnref:1" title="return to article"> ↩</a><p>
+    </li>
+</ol></div>
+        </div></div>
     </div>
     <div class="footer marketing">
         <p><i class="fa fa-heart"></i> <span class="sr-only">♥</span> from the Conversionista! team | <a href="https://github.com/Conversionista/skewness-calculator/issues" target="_blank" class="">Report a bug or an issue</a></p>
@@ -231,6 +242,7 @@
         </div>
     </div>
     </div>
+
     <!-- build:js scripts/vendor.js -->
     <!-- bower:js -->
     <script src="/bower_components/jquery/dist/jquery.js"></script>
@@ -242,6 +254,7 @@
     <script src="/bower_components/numeral/numeral.js"></script>
     <script src="/bower_components/loadie.js/js/jquery.loadie.js"></script>
     <script src="/bower_components/jquery-csv/src/jquery.csv.js"></script>
+    <script src="/bower_components/bigfoot/dist/bigfoot.min.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
     <!-- build:js scripts/plugins.js -->
@@ -258,6 +271,8 @@
     <script src="/bower_components/bootstrap-sass/assets/javascripts/bootstrap/collapse.js"></script>
     <script src="/bower_components/bootstrap-sass/assets/javascripts/bootstrap/tab.js"></script>
     <!-- endbuild -->
+    
+
     <!-- build:js scripts/main.js -->
     <script src="scripts/skewness.js"></script>
     <script src="scripts/main.js"></script>
@@ -266,6 +281,7 @@
     <script src="scripts/save.js"></script>
     <!-- endbuild -->
     <script src="https://apis.google.com/js/client.js?onload=authorize" async defer></script>
+    <script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML,Safe" async defer></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/1.0.9/cookieconsent.min.js" async defer></script>
 </body>
 
