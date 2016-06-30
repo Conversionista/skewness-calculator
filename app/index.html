@@ -74,7 +74,15 @@
     <div class="container">
         <div class="row">
             <div class="col-md-6">
-                <button class="btn btn-success" id="getTransactions">Get transactions from GA</button>
+                <div class="form-inline">
+                <div class="form-group">
+                <label for="metric">Metric</label>
+                <select class="form-control" id="metric">
+                    <option value="ga:transactionRevenue">Transaction Revenue</option>
+                </select>
+                </div>
+                <button class="btn btn-success" id="getData" disabled="true">Get data from GA</button>
+                </div>
                 <hr />
             </div>
             <div class="col-md-6">

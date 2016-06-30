@@ -17,6 +17,8 @@ function finishProgress() {
     progress = 1
     // console.log('Finished the Loadie - '+progress);
     $('body').loadie(progress);
+    $('#getData').attr('disabled', false);
+
 }
 
 /*eslint-disable camelcase*/
@@ -37,8 +39,6 @@ var DISCOVERY = 'https://analyticsreporting.googleapis.com/$discovery/rest';
 
 // Set authorized scope.
 var SCOPES = ['https://www.googleapis.com/auth/analytics.readonly', 'https://www.googleapis.com/auth/plus.me', 'https://www.googleapis.com/auth/plus.profile.emails.read'];
-
-$('#go').text('Loading...');
 
 function saveLocal(name, obj) {
     'use strict';
@@ -138,7 +138,6 @@ function getId(key) {
     } else {
         return l;
     }
-
 }
 
 function showError(title, message) {
@@ -152,21 +151,21 @@ function showError(title, message) {
     });
 }
 
-function createReportQuery(metrics) {
-    'use strict';
-    var l = readLocal(nameScope);
-    var q = {
-        'viewId': l.profileId,
-        'samplingLevel': 'LARGE',
-        'dateRanges': [{
-            'startDate': moment().subtract(28, 'days').format('YYYY-MM-DD'),
-            'endDate': moment().subtract(1, 'days').format('YYYY-MM-DD')
-        }],
-        'metrics': metrics
-    };
+// function createReportQuery(metrics) {
+//     'use strict';
+//     var l = readLocal(nameScope);
+//     var q = {
+//         'viewId': l.profileId,
+//         'samplingLevel': 'LARGE',
+//         'dateRanges': [{
+//             'startDate': moment().subtract(28, 'days').format('YYYY-MM-DD'),
+//             'endDate': moment().subtract(1, 'days').format('YYYY-MM-DD')
+//         }],
+//         'metrics': metrics
+//     };
 
-    return q;
-}
+//     return q;
+// }
 
 function authorize(event) {
     'use strict';
@@ -275,7 +274,7 @@ function handleAccounts(response) {
     'use strict';
     addProgress(0.13);
     if (response.result.items && response.result.items.length) {
-        $('#accountId').html('<option selected="selected" disabled="true">--Please Select --</option>').attr('disabled', false);
+        $('#accountId').html('<option selected="selected" disabled="true">--Please Select Account--</option>').attr('disabled', false);
         $.each(response.result.items, function(index, val) {
             $('#accountId').append($('<option/>', {
                 value: val.id,
@@ -309,7 +308,7 @@ function queryAccounts() {
 function handleProperties(response) {
     'use strict';
     if (response.result.items && response.result.items.length) {
-        $('#propertyId').html('<option selected="selected" disabled="true">--Please Select --</option>').attr('disabled', false);
+        $('#propertyId').html('<option selected="selected" disabled="true">--Please Select Property--</option>').attr('disabled', false);
         $.each(response.result.items, function(index, val) {
             $('#propertyId').append($('<option/>', {
                 value: val.id,
@@ -344,7 +343,7 @@ function queryProperties(accountId) {
 function handleProfiles(response) {
     'use strict';
     if (response.result.items && response.result.items.length) {
-        $('#profileId').html('<option selected="selected" disabled="true">--Please Select --</option>').attr('disabled', false);
+        $('#profileId').html('<option selected="selected" disabled="true">--Please Select Profile --</option>').attr('disabled', false);
         $.each(response.result.items, function(index, val) {
             $('#profileId').append($('<option/>', {
                 value: val.id,
@@ -374,79 +373,11 @@ function queryProfiles(accountId, propertyId) {
         })
         .then(handleProfiles)
         .then(null, function(err) {
-            showError('Profiles Query', 'Check the console for more details.');
+            showError('Profiles Query', 'Please select a account and a property');
             console.info(err);
         });
 }
 
-// function calculateMDU(users, cr, defaultWeek) {
-//     'use strict';
-//     var sig = $('#sigLvl').val();
-//     var weeks = $('#noWeeks').val();
-
-//     if(defaultWeek !== true){
-//       weeks = defaultWeek;
-//     }
-
-//     var variations = $('#noVar').val();
-//     return Math.sqrt(sig * variations * (1 - cr) / cr / (users * weeks));
-// }
-
-// function querySequenceQuery(val, val1, users, id, index) {
-//     'use strict';
-//     // Query the Core Reporting API for the number sessions for
-//     // the past seven days.
-//     gapi.client.analytics.data.ga.get({
-//             'ids': 'ga:' + getId('profileId'),
-//             'start-date': moment().subtract(28, 'days').format('YYYY-MM-DD'),
-//             'end-date': moment().subtract(1, 'days').format('YYYY-MM-DD'),
-//             'metrics': 'ga:users',
-//             'samplingLevel': 'HIGHER_PRECISION',
-//             'segment': 'users::sequence::' + val + ';->>' + val1
-//         })
-//         .then(function(response) {
-
-//             var u = parseInt(response.result.rows[0]);
-//             var cr = u / users;
-//             var s = '#' + id + ' .res1';
-
-//             // var obj = {
-//             //   id: id,
-//             //   u2: u,
-//             //   c2: cr,
-//             // };
-//             updateLocal(id, 'n2', val1);
-//             updateLocal(id, 'u2', u);
-//             updateLocal(id, 'c2', cr);
-
-
-//             if(u === 0){
-//               $(s).html('<i class="fa fa-warning" data-toggle="popover" data-placement="bottom" title="No users found" data-content="Please, check the spelling of your dynamic segment."></i>');
-//             } else {
-//               if( isFinite(cr) || isFinite(u) || !isNaN(cr) || !isNaN(u) ){
-//                 $(s).html(numeral(calculateMDU(users, cr, true)).format('0%'));
-//               } else {
-//                 $(s).html('∞');
-//               }
-//             }
-
-//             if (index === len - 1) {
-
-//               $('#go').html('Go!').attr('disabled', false);
-//               $('.showGraph').attr('disabled', false);
-//               $('[data-toggle="popover"]').popover({
-//                 trigger: 'hover'
-//               });
-
-//             }
-
-
-//         })
-//         .then(null, function(err) {
-//             // Log any errors.
-//             console.log(err);
-//         });
-// }
 function presentData(data){
     $('table').show();
     $('#variance').html('<code>' + Number(data.variance).toFixed(2) + '</code>');
@@ -467,9 +398,133 @@ function makeArr(data){
     return skewness(arr);
 }
 
+function queryTransactions() {
+    'use strict';
+    // Query the Core Reporting API for the number sessions for
+    // the past seven days.
+    gapi.client.analytics.data.ga.get({
+            'ids': 'ga:' + getId('profileId'),
+            'start-date': moment().subtract(28, 'days').format('YYYY-MM-DD'),
+            'end-date': moment().subtract(1, 'days').format('YYYY-MM-DD'),
+            'metrics': 'ga:transactionRevenue',
+            'dimensions': 'ga:transactionId',
+            'samplingLevel': 'HIGHER_PRECISION'
+        })
+        .then(function(response) {
+            console.log(response.result.rows);
+            var skew = makeArr(response.result.rows);
+            console.log(skew);
+            presentData(skew);
+            // var u = parseInt(response.result.rows[0][0]);
+            // var br = parseInt(response.result.rows[0][1]);
+            // var cr = (100 - br) / 100;
+            // var s = '#' + id + ' .res0';
+
+            // var obj = {
+            //   id: id,
+            //   u2: u,
+            //   c2: cr,
+            // };
+            // updateLocal(id, 'n1', val);
+            // updateLocal(id, 'u1', u);
+            // updateLocal(id, 'c1', cr);
+
+            // if(u === 0){
+            //   // $(s).html('<i class="fa fa-warning" data-toggle="popover" data-placement="bottom" title="No users found" data-content="Please, check the spelling of your dynamic segment."></i>');
+            // } else {
+
+            //   if( isFinite(cr) || isFinite(u) || !isNaN(cr) || !isNaN(u) ){
+            //     console.log('hello');
+            //   } else {
+            //     console.log('∞');
+            //   }
+
+            // }
+
+            // var s2 = '#' + id;
+            // var i = $(s2).find('input');
+            // querySequenceQuery($(i[0]).val(), $(i[1]).val(), u, id, index);
+
+        })
+        .then(null, function(err) {
+            // Log any errors.
+            console.log(err);
+        });
+}
+
+/**
+  * Response callback for when the API client receives a response.
+  *
+  * @param resp The API response object with the user email and profile information.
+  */
+function handleEmailResponse(resp) {
+    'use strict';
+    log(resp);
+    if (!resp.error) {
+        var primaryEmail;
+        if (resp.emails) {
+            for (var i = 0; i < resp.emails.length; i++) {
+                if (resp.emails[i].type === 'account') {
+                    primaryEmail = resp.emails[i].value;
+                }
+            }
+
+            if (primaryEmail) {
+                fcIdentify(resp.displayName, primaryEmail, resp.occupation, resp.gender);
+            }
+        }
+
+    }
+}
+
+/**
+  * Sets up an API call after the Google API client loads.
+  */
+function apiClientLoaded() {
+    'use strict';
+    gapi.client.plus.people.get({ userId: 'me' }).execute(handleEmailResponse);
+}
+
+function fcIdentify(name, email, occupation, gender) {
+    'use strict';
+    // log(name + '\n' + email);
+    if (typeof analytics !== 'undefined') { 
+        analytics.identify({
+            name: name,
+            email: email,
+            occupation: occupation,
+            gender: gender
+        });
+        log(name + '\n' + email  + '\n' +  occupation  + '\n' + gender);
+    }
+}
+
+$('#accountId').change( function() {
+    'use strict';
+    
+    updateLocal(nameScope, 'propertyId', '');
+    updateLocal(nameScope, 'profileId', '');
+    
+    $('#propertyId').html('<option selected="selected" disabled="true">--Please Select Account --</option>').attr('disabled', false);
+    $('#profileId').html('<option selected="selected" disabled="true">--Please Select Property --</option>').attr('disabled', false);
+
+    updateLocal(nameScope, 'accountId', this.value);
+    queryProperties(this.value);
+});
+
+$('#propertyId').change( function() {
+    'use strict';
+    updateLocal(nameScope, 'propertyId', this.value);
+    queryProfiles($('#accountId').val(), this.value);
+});
+
+$('#profileId').change( function() {
+    'use strict';
+    updateLocal(nameScope, 'profileId', this.value);
+});
 
 $(document).ready(function() {
-
+    'use strict';
     // The event listener for the file upload
     document.getElementById('txtFileUpload').addEventListener('change', upload, false);
 
@@ -526,194 +581,19 @@ $(document).ready(function() {
             };
         }
     }
-});
 
-
-
-function queryTransactions() {
-    'use strict';
-    // Query the Core Reporting API for the number sessions for
-    // the past seven days.
-    gapi.client.analytics.data.ga.get({
-            'ids': 'ga:' + getId('profileId'),
-            'start-date': moment().subtract(28, 'days').format('YYYY-MM-DD'),
-            'end-date': moment().subtract(1, 'days').format('YYYY-MM-DD'),
-            'metrics': 'ga:transactionRevenue',
-            'dimensions': 'ga:transactionId',
-            'samplingLevel': 'HIGHER_PRECISION'
-        })
-        .then(function(response) {
-            console.log(response.result.rows);
-            var skew = makeArr(response.result.rows);
-            console.log(skew);
-            presentData(skew);
-            // var u = parseInt(response.result.rows[0][0]);
-            // var br = parseInt(response.result.rows[0][1]);
-            // var cr = (100 - br) / 100;
-            // var s = '#' + id + ' .res0';
-
-            // var obj = {
-            //   id: id,
-            //   u2: u,
-            //   c2: cr,
-            // };
-            // updateLocal(id, 'n1', val);
-            // updateLocal(id, 'u1', u);
-            // updateLocal(id, 'c1', cr);
-
-            // if(u === 0){
-            //   // $(s).html('<i class="fa fa-warning" data-toggle="popover" data-placement="bottom" title="No users found" data-content="Please, check the spelling of your dynamic segment."></i>');
-            // } else {
-
-            //   if( isFinite(cr) || isFinite(u) || !isNaN(cr) || !isNaN(u) ){
-            //     console.log('hello');
-            //   } else {
-            //     console.log('∞');
-            //   }
-
-            // }
-
-            // var s2 = '#' + id;
-            // var i = $(s2).find('input');
-            // querySequenceQuery($(i[0]).val(), $(i[1]).val(), u, id, index);
-
-        })
-        .then(null, function(err) {
-            // Log any errors.
-            console.log(err);
-        });
-}
-
-function getFormValues() {
-    'use strict';
-    var row = $('table.table tbody tr');
-    len = row.length;
-    console.log(len);
-    row.each(function(index) {
-      console.log(index);
-      var id = $(this).attr('id');
-      var i = $(this).find('input');
-      // console.log($(i[0]).val());
-      queryBounceQuery($(i[0]).val(), id, index);
-
-    });
-
-
-
-}
-
-$('#go').on('click', function(event) {
-    'use strict';
-
-    $(this).html('<i class="fa fa-cog fa-spin"></i>').attr('disabled', true);
-
-    // var l = readLocal(nameScope);
-    // queryReports(l.profileId, createReportQuery([{ 'expression': 'ga:users' }, { 'expression': 'ga:pageviews' }, { 'expression': 'ga:transactions' }]));
-    getFormValues();
-    event.preventDefault();
-});
-
-/**
-  * Response callback for when the API client receives a response.
-  *
-  * @param resp The API response object with the user email and profile information.
-  */
-function handleEmailResponse(resp) {
-    'use strict';
-    console.log(resp);
-    if (!resp.error) {
-        var primaryEmail;
-        if (resp.emails) {
-            for (var i = 0; i < resp.emails.length; i++) {
-                if (resp.emails[i].type === 'account') {
-                    primaryEmail = resp.emails[i].value;
-                }
-            }
-
-            if (primaryEmail) {
-
-                // console.info(resp);
-                fcIdentify(resp.displayName, primaryEmail);
-                hideLoginButton();
-            }
-        }
-
-    }
-}
-
-/**
-  * Sets up an API call after the Google API client loads.
-  */
-function apiClientLoaded() {
-    'use strict';
-    gapi.client.plus.people.get({ userId: 'me' }).execute(handleEmailResponse);
-}
-
-
-/*eslint-disable no-unused-vars*/
-/**
-  * Handler for the signin callback triggered after the user selects an account.
-//   */
-// function onSignInCallback(resp) {
-//    'use strict';
-//    gapi.client.load('plus', 'v1', apiClientLoaded);
-// }
-/*eslint-enable no-unused-vars*/
-
-// $('.btn-social-icon.btn-google').on('click', function(event) {
-//     event.preventDefault();
-//     /* Act on the event */
-//     $('body').append('<script src="https://plus.google.com/js/client:platform.js?onload=onSignInCallback" async defer></script>');
-
-// });
-
-
-function fcIdentify(name, email) {
-    'use strict';
-    // log(name + '\n' + email);
-    if (typeof analytics !== 'undefined') { 
-        analytics.identify({
-            name: name,
-            email: email
-        });
-        // log(name + '\n' + email);
-    }
-}
-
-function hideLoginButton() {
-    'use strict';
-    $('#gConnect').hide();
-    // console.info('hide button');
-}
-
-$('#accountId').change( function() {
-    'use strict';
-    queryProperties(this.value);
-    updateLocal(nameScope, 'accountId', this.value);
-});
-
-$('#propertyId').change( function() {
-    'use strict';
-    queryProfiles($('#accountId').val(), this.value);
-    updateLocal(nameScope, 'propertyId', this.value);
-});
-
-$('#profileId').change( function() {
-    'use strict';
-    console.log('change')
-    updateLocal(nameScope, 'profileId', this.value);
-});
-
-
-$(document).ready(function() {
-    'use strict';
     $(':checkbox').checkboxpicker();
     $('[data-toggle="tooltip"]').tooltip();
     $.bigfoot();
 });
 
-$('#getTransactions').on('click', function(event) {
+$('#getData').on('click', function(event) {
+    'use strict';
+
     event.preventDefault();
     /* Act on the event */
-    queryTransactions();
+    if($('#metric').val() === 'ga:transactionRevenue'){
+        queryTransactions();
+    }
+    
 });
